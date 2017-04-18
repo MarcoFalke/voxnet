@@ -134,7 +134,6 @@ def main(args):
     logging.info('Training...')
     itr = 0
     last_checkpoint_itr = 0
-    loader = (data_loader(cfg, args.training_fname))
     for epoch in xrange(cfg['max_epochs']):
         loader = (data_loader(cfg, args.training_fname))
 
