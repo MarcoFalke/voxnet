@@ -105,18 +105,23 @@ def data_loader(cfg, fname):
         yc.append(int(name.split('.')[0])-1)
         if len(yc) == chunk_size:
             xc = jitter_chunk(xc, cfg)
+            assert len(yc) == len(xc)
             yield (2.0*xc - 1.0, np.asarray(yc, dtype=np.float32))
             yc = []
             xc.fill(0)
     if len(yc) > 0:
         # pad to nearest multiple of batch_size
-        if len(yc)%cfg['batch_size'] != 0:
+        if len(yc) % cfg['batch_size'] == 0:
+            new_size = len(yc)
+        else:
             new_size = int(np.ceil(len(yc)/float(cfg['batch_size'])))*cfg['batch_size']
-            xc = xc[:new_size]
-            xc[len(yc):] = xc[:(new_size-len(yc))]
-            yc = yc + yc[:(new_size-len(yc))]
+
+        xc = xc[:new_size]
+        xc[len(yc):] = xc[:(new_size - len(yc))]
+        yc += yc[:(new_size - len(yc))]
 
         xc = jitter_chunk(xc, cfg)
+        assert len(yc) == len(xc)
         yield (2.0*xc - 1.0, np.asarray(yc, dtype=np.float32))
 
 def main(args):
